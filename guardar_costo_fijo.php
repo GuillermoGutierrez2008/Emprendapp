@@ -1,38 +1,39 @@
 <?php
-session_start();
-$_SESSION['usuario_id'] = 1; // ID de prueba por ahora
+require_once 'config.php';
 
-header('Content-Type: application/json');
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+    exit;
+}
 
-$host = 'localhost';
-$dbname = 'emprendapp';
-$username = 'root';
-$password = '';
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+
+$nombre = trim(filter_var($data['nombre'] ?? $_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
+$monto = filter_var($data['monto'] ?? $_POST['monto'] ?? null, FILTER_VALIDATE_FLOAT);
+
+if (empty($nombre) || $monto === false || $monto <= 0) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Campos inválidos']);
+    exit;
+}
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $pdo->prepare("INSERT INTO costos_fijos (id_usuario, nombre, monto) VALUES (:id_usuario, :nombre, :monto)");
+    $stmt->execute([
+        ':id_usuario' => $_SESSION['usuario_id'],
+        ':nombre' => $nombre,
+        ':monto' => $monto
+    ]);
 
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-        $nombre = $_POST['nombre'] ?? '';
-        $monto = $_POST['monto'] ?? 0;
-        $id_usuario = $_SESSION['usuario_id'];
-
-        if (empty($nombre) || $monto <= 0) {
-            echo json_encode(['status' => 'error', 'message' => 'Campos inválidos']);
-            exit;
-        }
-
-        $stmt = $pdo->prepare("INSERT INTO costos_fijos (id_usuario, nombre, monto) VALUES (:id_usuario, :nombre, :monto)");
-        $stmt->execute([
-            ':id_usuario' => $id_usuario,
-            ':nombre' => $nombre,
-            ':monto' => $monto
-        ]);
-
-        echo json_encode(['status' => 'success']);
-    }
+    echo json_encode([
+        'status' => 'success', 
+        'message' => 'Costo fijo guardado',
+        'id' => $pdo->lastInsertId()
+    ]);
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    error_log($e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Error al guardar el costo fijo']);
 }
-?>

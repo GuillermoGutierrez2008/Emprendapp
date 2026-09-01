@@ -1,24 +1,20 @@
 <?php
-session_start();
-$_SESSION['usuario_id'] = 1;
+require_once 'config.php';
 
-header('Content-Type: application/json');
-
-$host = 'localhost';
-$dbname = 'emprendapp';
-$username = 'root';
-$password = '';
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+    exit;
+}
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $stmt = $pdo->prepare("SELECT * FROM costos_fijos WHERE id_usuario = :id_usuario ORDER BY id DESC");
     $stmt->execute([':id_usuario' => $_SESSION['usuario_id']]);
-    $costos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $costos = $stmt->fetchAll();
 
-    echo json_encode($costos);
+    echo json_encode(['status' => 'success', 'data' => $costos]);
 } catch (PDOException $e) {
-    echo json_encode([]);
+    error_log($e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Error al cargar los costos fijos']);
 }
-?>

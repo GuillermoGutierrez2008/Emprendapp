@@ -1,75 +1,72 @@
 <?php
-session_start();
-$_SESSION['usuario_id'] = 1;
+require_once 'config.php';
 
-$host = 'localhost';
-$dbname = 'emprendapp'; 
-$username = 'root';
-$password = '';
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+    exit;
+}
+
+if (!isset($_SESSION['usuario_id'])) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión para realizar esta acción.']);
+    exit;
+}
+
+// Sanitización de todas las entradas del formulario
+$nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS));
+$descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_SPECIAL_CHARS));
+$precio = filter_input(INPUT_POST, 'precio', FILTER_VALIDATE_FLOAT);
+$stock_actual = filter_input(INPUT_POST, 'stock_actual', FILTER_VALIDATE_INT);
+$stock_minimo = filter_input(INPUT_POST, 'stock_minimo', FILTER_VALIDATE_INT);
+
+$tipo_cuero = trim(filter_input(INPUT_POST, 'tipo_cuero', FILTER_SANITIZE_SPECIAL_CHARS));
+$color = trim(filter_input(INPUT_POST, 'color', FILTER_SANITIZE_SPECIAL_CHARS));
+$tamano = trim(filter_input(INPUT_POST, 'tamano', FILTER_SANITIZE_SPECIAL_CHARS));
+
+if (!$nombre || $precio === false) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Datos obligatorios faltantes o inválidos']);
+    exit;
+}
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->beginTransaction();
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        
-        if (!isset($_SESSION['usuario_id'])) {
-            die("Error: Debes iniciar sesión para realizar esta acción.");
-        }
+    $sqlProducto = "INSERT INTO productos (id_usuario, nombre, descripcion, precio, stock_actual, stock_minimo) 
+                    VALUES (:id_usuario, :nombre, :descripcion, :precio, :stock_actual, :stock_minimo)";
+    
+    $stmtProducto = $pdo->prepare($sqlProducto);
+    $stmtProducto->execute([
+        ':id_usuario' => $_SESSION['usuario_id'],
+        ':nombre' => $nombre,
+        ':descripcion' => $descripcion,
+        ':precio' => $precio,
+        ':stock_actual' => $stock_actual,
+        ':stock_minimo' => $stock_minimo
+    ]);
 
-        $id_usuario_logueado = $_SESSION['usuario_id'];
+    $id_producto = $pdo->lastInsertId();
 
-        $nombre = $_POST['nombre'];
-        $descripcion = $_POST['descripcion'];
-        $precio = $_POST['precio'];
-        $stock_actual = $_POST['stock_actual'];
-        $stock_minimo = $_POST['stock_minimo'];
-        
-        $tipo_cuero = $_POST['tipo_cuero'];
-        $color = $_POST['color'];
-        $tamano = $_POST['tamano'];
-        
-        $pdo->beginTransaction();
+    $sqlVariante = "INSERT INTO variantes_marroquineria (id_producto, tipo_cuero, color, tamano) 
+                    VALUES (:id_producto, :tipo_cuero, :color, :tamano)";
+    
+    $stmtVariante = $pdo->prepare($sqlVariante);
+    $stmtVariante->execute([
+        ':id_producto' => $id_producto,
+        ':tipo_cuero' => $tipo_cuero,
+        ':color' => $color,
+        ':tamano' => $tamano
+    ]);
 
-        $sqlProducto = "INSERT INTO productos (id_usuario, nombre, descripcion, precio, stock_actual, stock_minimo) 
-                        VALUES (:id_usuario, :nombre, :descripcion, :precio, :stock_actual, :stock_minimo)";
-        
-        $stmtProducto = $pdo->prepare($sqlProducto);
-        $stmtProducto->execute([
-            ':id_usuario' => $id_usuario_logueado,
-            ':nombre' => $nombre,
-            ':descripcion' => $descripcion,
-            ':precio' => $precio,
-            ':stock_actual' => $stock_actual,
-            ':stock_minimo' => $stock_minimo
-        ]);
+    $pdo->commit();
 
-        $id_producto = $pdo->lastInsertId();
-
-        $sqlVariante = "INSERT INTO variantes_marroquineria (id_producto, tipo_cuero, color, tamano) 
-                        VALUES (:id_producto, :tipo_cuero, :color, :tamano)";
-        
-        $stmtVariante = $pdo->prepare($sqlVariante);
-        $stmtVariante->execute([
-            ':id_producto' => $id_producto,
-            ':tipo_cuero' => $tipo_cuero,
-            ':color' => $color,
-            ':tamano' => $tamano
-        ]);
-
-        $pdo->commit();
-
-        // En vez de redireccionar, devolvemos una respuesta silenciosa para AJAX
-    header('Content-Type: application/json');
-    echo json_encode(['status' => 'success']);
-    exit();
-    } else {
-        echo "Acceso no válido. Debes enviar el formulario por POST.";
-    }
+    echo json_encode(['status' => 'success', 'message' => 'Producto registrado correctamente']);
 } catch (PDOException $e) {
-    if (isset($pdo) && $pdo->inTransaction()) {
+    if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    echo "Error crítico al intentar guardar en la base de datos: " . $e->getMessage();
+    error_log($e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Error crítico al intentar guardar en la base de datos']);
 }
-?>
