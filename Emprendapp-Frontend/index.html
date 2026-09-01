@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmprendApp — Tu negocio, tu app</title>
+
+<!-- Google Fonts: Playfair Display (títulos) + Inter (cuerpo/forms) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- CSS modular -->
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/screens.css">
+</head>
+<body>
+
+<!-- Contenedor de notificaciones tipo toast, flotante sobre toda la app -->
+<div class="toast-container js-toast-container" aria-live="polite"></div>
+
+<!-- ==========================================================================
+     HEADER SUPERIOR (solo visible en las pantallas principales de la app,
+     se activa/desactiva vía JS agregando la clase "has-app-header" al body)
+========================================================================== -->
+<header class="app-header js-app-header">
+  <button class="hamburger-btn js-hamburger" type="button" aria-label="Abrir menú" aria-expanded="false">
+    <span class="hamburger-btn__line"></span>
+    <span class="hamburger-btn__line"></span>
+    <span class="hamburger-btn__line"></span>
+  </button>
+  <span class="app-header__title js-header-title">Insumos</span>
+  <div class="app-header__spacer" aria-hidden="true"></div>
+  <button class="theme-toggle-btn js-theme-toggle" type="button" aria-label="Cambiar a modo claro">🌙</button>
+</header>
+
+<!-- ==========================================================================
+     MENÚ LATERAL (DRAWER) — navegación rápida entre secciones principales
+========================================================================== -->
+<div class="drawer-overlay js-drawer-overlay">
+  <nav class="drawer js-drawer" aria-label="Menú principal">
+    <div class="drawer__header">
+      <span class="drawer__brand">EmprendApp</span>
+      <button class="drawer__close js-drawer-close" type="button" aria-label="Cerrar menú">✕</button>
+    </div>
+    <ul class="drawer__nav">
+      <li><a href="#" class="drawer__link js-goto js-drawer-link" data-target="insumos">📦 <span>Inicio / Insumos</span></a></li>
+      <li><a href="#" class="drawer__link js-goto js-drawer-link" data-target="costos">💰 <span>Gestión de costos</span></a></li>
+      <li><a href="#" class="drawer__link js-goto js-drawer-link" data-target="calculos">🧮 <span>Cálculos de precio y margen</span></a></li>
+      <li><a href="#" class="drawer__link js-goto js-drawer-link" data-target="estadisticas">📊 <span>Dashboard / Estadísticas</span></a></li>
+      <li><a href="#" class="drawer__link js-goto js-drawer-link" data-target="perfil">⚙️ <span>Configuración / Mi perfil</span></a></li>
+    </ul>
+    <button class="drawer__logout js-logout" type="button">🚪 Cerrar sesión</button>
+  </nav>
+</div>
+
+<div id="app">
+
+  <!-- ======================================================================
+       1. SPLASH SCREEN
+  ======================================================================= -->
+  <section class="screen screen-splash is-active" id="screen-splash" data-screen="splash">
+    <div class="splash__icon">E</div>
+    <h1 class="splash__title">EmprendApp</h1>
+    <p class="splash__tagline">Tu negocio, tu app</p>
+    <p class="splash__hint">Tocá la pantalla para continuar</p>
+  </section>
+
+  <!-- ======================================================================
+       2. LOGIN
+  ======================================================================= -->
+  <section class="screen screen--auth" id="screen-login" data-screen="login">
+    <h2 class="auth-brand">EmprendApp</h2>
+    <div class="auth-card-wrapper">
+      <div class="auth-card">
+        <h1 class="auth-card__title">Iniciar sesión</h1>
+        <p class="auth-card__subtitle">Ingresá tus datos para continuar</p>
+
+        <form class="js-login-form" novalidate>
+          <div class="field">
+            <label class="field__label" for="login-email">Email</label>
+            <input class="field__input js-input-email" type="email" id="login-email" placeholder="tu@gmail.com" autocomplete="email">
+            <span class="field__error">Ingresá un email válido.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="login-password">Contraseña</label>
+            <input class="field__input js-input-password" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+            <span class="field__error">La contraseña es obligatoria.</span>
+          </div>
+
+          <a href="#" class="auth-card__link js-goto" data-target="recover-request">¿Olvidaste la contraseña?</a>
+
+          <button type="submit" class="btn btn-primary">Ingresar</button>
+        </form>
+
+        <p class="auth-card__footer">
+          ¿No tenés cuenta?
+          <a href="#" class="js-link js-goto" data-target="register-data">Registrate</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       3. RECUPERAR CONTRASEÑA — PASO 1: SOLICITAR CÓDIGO
+  ======================================================================= -->
+  <section class="screen screen--auth" id="screen-recover-request" data-screen="recover-request">
+    <button class="btn-back js-goto" data-target="login">‹ Volver</button>
+    <div class="auth-icon-badge">🔒</div>
+    <h1 class="auth-card__title u-text-center">Recuperar contraseña</h1>
+    <p class="auth-card__subtitle u-text-center">Ingresá tu email y te enviamos un código</p>
+
+    <form class="js-recover-form u-mt-lg" novalidate>
+      <div class="field">
+        <label class="field__label" for="recover-email">Email</label>
+        <input class="field__input js-input-email" type="email" id="recover-email" placeholder="tu@gmail.com" autocomplete="email">
+        <span class="field__error">Ingresá un email válido.</span>
+      </div>
+      <button type="submit" class="btn btn-primary">Enviar código</button>
+    </form>
+  </section>
+
+  <!-- Modal de código de verificación (se muestra sobre recover-request) -->
+  <div class="modal-overlay js-modal-otp">
+    <div class="modal">
+      <h3 class="modal__title">Verificá tu email</h3>
+      <p class="modal__text">Te enviamos un código de 4 dígitos a tu casilla. Ingresalo para continuar. <br><span class="u-text-accent">(Simulado: cualquier código funciona)</span></p>
+      <div class="otp-group">
+        <input class="otp-group__input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-group__input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-group__input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-group__input" type="text" inputmode="numeric" maxlength="1">
+      </div>
+      <div class="modal__actions">
+        <button class="btn btn-secondary js-modal-otp-cancel">Cancelar</button>
+        <button class="btn btn-primary js-modal-otp-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       4. NUEVA CONTRASEÑA — PASO 2: RESTABLECER
+  ======================================================================= -->
+  <section class="screen screen--auth" id="screen-recover-reset" data-screen="recover-reset">
+    <button class="btn-back js-goto" data-target="login">‹ Volver</button>
+    <div class="auth-icon-badge">🛡️</div>
+    <h1 class="auth-card__title u-text-center">Nueva contraseña</h1>
+    <p class="auth-card__subtitle u-text-center">Elegí una contraseña segura</p>
+
+    <form class="js-reset-form u-mt-lg" novalidate>
+      <div class="field">
+        <label class="field__label" for="reset-password">Nueva contraseña</label>
+        <input class="field__input js-input-password" type="password" id="reset-password" placeholder="••••••••">
+        <span class="field__error">Mínimo 6 caracteres.</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="reset-password-repeat">Repetir contraseña</label>
+        <input class="field__input js-input-password-repeat" type="password" id="reset-password-repeat" placeholder="••••••••">
+        <span class="field__error">Las contraseñas no coinciden.</span>
+      </div>
+      <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+    </form>
+  </section>
+
+  <!-- ======================================================================
+       5. REGISTRO — PASO 1: DATOS PERSONALES
+  ======================================================================= -->
+  <section class="screen screen--auth" id="screen-register-data" data-screen="register-data">
+    <button class="btn-back js-goto" data-target="login">‹ Volver</button>
+    <div class="onboarding-progress">
+      <span class="onboarding-progress__step is-done"></span>
+      <span class="onboarding-progress__step"></span>
+    </div>
+    <h1 class="auth-card__title">Tus datos</h1>
+    <p class="auth-card__subtitle">Contanos quién sos para crear tu cuenta</p>
+
+    <form class="js-register-form u-mt-md" novalidate>
+      <div class="field">
+        <label class="field__label" for="reg-name">Nombre completo</label>
+        <input class="field__input js-input-name" type="text" id="reg-name" placeholder="Ana Pérez" autocomplete="name">
+        <span class="field__error">Ingresá tu nombre.</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="reg-email">Email</label>
+        <input class="field__input js-input-email" type="email" id="reg-email" placeholder="tu@gmail.com" autocomplete="email">
+        <span class="field__error">Ingresá un email válido.</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="reg-password">Contraseña</label>
+        <input class="field__input js-input-password" type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password">
+        <span class="field__error">Mínimo 6 caracteres.</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="reg-password-repeat">Repetir contraseña</label>
+        <input class="field__input js-input-password-repeat" type="password" id="reg-password-repeat" placeholder="••••••••">
+        <span class="field__error">Las contraseñas no coinciden.</span>
+      </div>
+      <button type="submit" class="btn btn-primary">Siguiente</button>
+    </form>
+  </section>
+
+  <!-- ======================================================================
+       6. SELECCIÓN DE RUBRO — PASO 2 DEL ONBOARDING
+  ======================================================================= -->
+  <section class="screen screen--auth" id="screen-rubro" data-screen="rubro">
+    <button class="btn-back js-goto" data-target="register-data">‹ Volver</button>
+    <div class="onboarding-progress">
+      <span class="onboarding-progress__step is-done"></span>
+      <span class="onboarding-progress__step is-done"></span>
+    </div>
+    <h1 class="auth-card__title">Tu rubro</h1>
+    <p class="auth-card__subtitle">Elegí la actividad de tu emprendimiento</p>
+
+    <div class="rubro-grid js-rubro-grid">
+      <button class="select-card js-rubro-card" data-rubro="kiosco" type="button">
+        <div class="select-card__icon">🏪</div>
+        <div class="select-card__title">Kiosco de colegio</div>
+        <div class="select-card__desc">POS y stock</div>
+      </button>
+      <button class="select-card js-rubro-card" data-rubro="rotiseria" type="button">
+        <div class="select-card__icon">🍗</div>
+        <div class="select-card__title">Rotisería</div>
+        <div class="select-card__desc">Pedidos y delivery</div>
+      </button>
+      <button class="select-card js-rubro-card" data-rubro="marroquineria" type="button">
+        <div class="select-card__icon">👜</div>
+        <div class="select-card__title">Marroquinería</div>
+        <div class="select-card__desc">Pedidos y materiales</div>
+      </button>
+      <button class="select-card js-rubro-card" data-rubro="impresion3d" type="button">
+        <div class="select-card__icon">🖨️</div>
+        <div class="select-card__title">Impresión 3D</div>
+        <div class="select-card__desc">Cotizador y cola</div>
+      </button>
+    </div>
+
+    <button class="btn btn-primary js-confirm-rubro" type="button" disabled>Confirmar rubro</button>
+  </section>
+
+  <!-- ======================================================================
+       7. INSUMOS
+  ======================================================================= -->
+  <section class="screen screen--app" id="screen-insumos" data-screen="insumos">
+    <div class="screen-header">
+      <div>
+        <h1 class="screen-header__title">Insumos</h1>
+        <p class="screen-header__subtitle">Gestioná tus materiales y stock</p>
+      </div>
+      <button class="btn-fab js-open-insumo-modal" type="button" aria-label="Agregar insumo">+</button>
+    </div>
+
+    <div class="search-bar">
+      <span class="search-bar__icon">🔍</span>
+      <input type="text" class="search-bar__input js-search-insumo" placeholder="Buscar insumo">
+    </div>
+
+    <!-- creador de insumos automatico (error) -->
+    <div class="js-insumos-list responsive-list-grid"><!-- Renderizado dinámico desde state.js --></div>
+
+    <button class="btn btn-primary u-mt-lg js-goto u-max-w-form" data-target="costos" type="button">Calcular costos con estos insumos</button>
+  </section>
+
+  <!-- Modal para agregar / editar insumo -->
+  <div class="modal-overlay js-modal-insumo">
+    <div class="modal">
+      <h3 class="modal__title js-modal-insumo-title">Nuevo insumo</h3>
+      <form class="js-insumo-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="insumo-nombre">Nombre</label>
+          <input class="field__input js-insumo-nombre" type="text" id="insumo-nombre" placeholder="Ej: Pla Blanco 1kg">
+        </div>
+        <div class="field">
+          <label class="field__label" for="insumo-precio">Precio</label>
+          <input class="field__input js-insumo-precio" type="number" id="insumo-precio" placeholder="0" min="0" step="1">
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn-secondary js-modal-insumo-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       8. COSTOS (FIJOS Y VARIABLES)
+  ======================================================================= -->
+  <section class="screen screen--app" id="screen-costos" data-screen="costos">
+    <button class="btn-back js-goto" data-target="insumos">‹ Volver</button>
+    <div class="screen-header">
+      <div>
+        <h1 class="screen-header__title">Costos</h1>
+        <p class="screen-header__subtitle">Gestioná tus costos fijos y variables</p>
+      </div>
+    </div>
+
+    <div class="tabs js-cost-tabs">
+      <button class="tabs__btn is-active" data-tab="fijos" type="button">Costos fijos</button>
+      <button class="tabs__btn" data-tab="variables" type="button">Costos variables</button>
+      <button class="tabs__btn" data-tab="desglose" type="button">Desglose total</button>
+    </div>
+
+    <!-- Panel: Costos fijos. En desktop, la lista y el resumen se
+         acomodan en dos columnas mediante .costos-panel-grid (screens.css) -->
+    <div class="tab-panel is-active" data-tab-panel="fijos">
+      <div class="costos-panel-grid">
+        <div class="costos-panel-grid__main">
+          <button class="btn btn-secondary u-max-w-form js-open-costo-modal" data-tipo="fijo" type="button">+ Agregar costo fijo</button>
+          <div class="js-costos-fijos-list responsive-list-grid u-mt-md"></div>
+        </div>
+        <div class="costos-panel-grid__aside">
+          <div class="cost-summary cost-summary--aside">
+            <div class="cost-summary__card">
+              <div class="cost-summary__label">Total costos fijos mensuales</div>
+              <div class="cost-summary__value js-total-fijos">$0</div>
+            </div>
+            <div class="cost-summary__card">
+              <div class="cost-summary__label">Costo fijo por día</div>
+              <div class="cost-summary__value js-costo-diario">$0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Costos variables -->
+    <div class="tab-panel" data-tab-panel="variables">
+      <button class="btn btn-secondary u-max-w-form js-open-costo-modal" data-tipo="variable" type="button">+ Agregar costo variable</button>
+      <div class="js-costos-variables-list responsive-list-grid u-mt-md"></div>
+    </div>
+
+    <!-- Panel: Desglose total -->
+    <div class="tab-panel" data-tab-panel="desglose">
+      <div class="card u-mt-md u-max-w-form">
+        <div class="u-flex-between u-mt-sm">
+          <span class="u-text-secondary">Costos fijos</span>
+          <span class="js-desglose-fijos">$0</span>
+        </div>
+        <div class="u-flex-between u-mt-sm">
+          <span class="u-text-secondary">Costos variables</span>
+          <span class="js-desglose-variables">$0</span>
+        </div>
+        <div class="u-flex-between u-mt-md" style="border-top: 1px solid var(--color-border); padding-top: var(--space-sm);">
+          <span style="font-weight:700;">Total general</span>
+          <span class="js-desglose-total u-text-accent" style="font-weight:700;">$0</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary u-mt-lg js-goto u-max-w-form" data-target="calculos" type="button">Ir a cálculos de precio</button>
+  </section>
+
+  <!-- Modal para agregar costo -->
+  <div class="modal-overlay js-modal-costo">
+    <div class="modal">
+      <h3 class="modal__title">Nuevo costo</h3>
+      <form class="js-costo-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="costo-concepto">Concepto</label>
+          <input class="field__input js-costo-concepto" type="text" id="costo-concepto" placeholder="Ej: Alquiler">
+        </div>
+        <div class="field">
+          <label class="field__label" for="costo-categoria">Categoría</label>
+          <select class="field__input js-costo-categoria" id="costo-categoria">
+            <option value="Alquiler">Alquiler</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Sueldos">Sueldos</option>
+            <option value="Insumos">Insumos</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="costo-monto">Monto mensual</label>
+          <input class="field__input js-costo-monto" type="number" id="costo-monto" placeholder="0" min="0" step="1">
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn-secondary js-modal-costo-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       9. CÁLCULOS Y PRECIO DE VENTA
+  ======================================================================= -->
+  <section class="screen screen--app" id="screen-calculos" data-screen="calculos">
+    <button class="btn-back js-goto" data-target="costos">‹ Volver</button>
+    <div class="screen-header">
+      <div>
+        <h1 class="screen-header__title">Cálculos</h1>
+        <p class="screen-header__subtitle">Precio de venta</p>
+      </div>
+    </div>
+
+    <!-- En desktop, .calculos-grid acomoda las métricas en 2 columnas,
+         dejando el precio sugerido (el dato más importante) a todo lo ancho -->
+    <div class="calculos-grid">
+      <div class="metric-card">
+        <div class="metric-card__label">Costo total por unidad</div>
+        <div class="metric-card__value js-costo-unidad">$0</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="slider-row">
+          <div class="metric-card__label">Margen de ganancia</div>
+          <span class="badge badge--accent js-margen-badge">40%</span>
+        </div>
+        <input type="range" class="slider js-margen-slider" min="0" max="100" value="40" step="1">
+      </div>
+
+      <div class="card price-highlight calculos-grid__full">
+        <div class="price-highlight__label">Precio sugerido</div>
+        <div class="price-highlight__value js-precio-sugerido">$0</div>
+        <div class="price-highlight__gain">Ganancia <span class="js-ganancia">$0</span></div>
+      </div>
+
+      <div class="metric-card calculos-grid__full">
+        <div class="breakeven-row">
+          <span class="metric-card__label" style="margin:0;">Punto de equilibrio</span>
+          <span class="breakeven-row__value"><span class="js-punto-equilibrio">0</span> unid.</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill js-progress-equilibrio"></div>
+        </div>
+        <p class="u-text-secondary u-mt-sm" style="font-size: var(--fs-xs);">Vendiste <span class="js-vendidas">0</span> este mes</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary u-mt-lg u-max-w-form js-save-calculos" type="button">Guardar cambios</button>
+  </section>
+
+  <!-- ======================================================================
+       10. ESTADÍSTICAS / DASHBOARD
+  ======================================================================= -->
+  <section class="screen screen--app" id="screen-estadisticas" data-screen="estadisticas">
+    <div class="screen-header">
+      <div>
+        <h1 class="screen-header__title">Estadísticas</h1>
+        <p class="screen-header__subtitle js-periodo">Mayo 2026</p>
+      </div>
+      <button class="btn-icon-round js-goto" data-target="calculos" aria-label="Ir a cálculos" type="button">⚙️</button>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card__label">Ingresos</div>
+        <div class="kpi-card__value js-kpi-ingresos">$0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__label">Costos</div>
+        <div class="kpi-card__value js-kpi-costos">$0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__label">Margen</div>
+        <div class="kpi-card__value js-kpi-margen">0%</div>
+      </div>
+    </div>
+
+    <!-- En desktop, .estadisticas-grid pone el gráfico y el ranking
+         lado a lado en vez de apilados -->
+    <div class="estadisticas-grid">
+      <div class="card chart-card">
+        <h3 class="chart-card__title">Ingresos por mes</h3>
+        <div class="bar-chart js-bar-chart"><!-- Barras renderizadas por JS --></div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-card__title">Productos rentables</h3>
+        <div class="js-rank-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       11. CONFIGURACIÓN / MI PERFIL (accesible desde el menú lateral, y
+           automáticamente justo después de terminar el registro)
+  ======================================================================= -->
+  <section class="screen screen--app" id="screen-perfil" data-screen="perfil">
+    <div class="screen-header">
+      <div>
+        <h1 class="screen-header__title">Mi perfil</h1>
+        <p class="screen-header__subtitle">Datos de tu cuenta y tu emprendimiento</p>
+      </div>
+    </div>
+
+    <form class="card u-max-w-form js-perfil-form" novalidate>
+      <div class="field">
+        <label class="field__label" for="perfil-nombre">Nombre completo</label>
+        <input class="field__input js-perfil-nombre" type="text" id="perfil-nombre" disabled>
+        <span class="field__error">Ingresá tu nombre.</span>
+      </div>
+      <div class="field">
+        <label class="field__label" for="perfil-email">Email</label>
+        <input class="field__input js-perfil-email" type="email" id="perfil-email" disabled>
+        <span class="field__error">Ingresá un email válido.</span>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label class="field__label" for="perfil-rubro">Rubro</label>
+        <select class="field__input js-perfil-rubro" id="perfil-rubro" disabled>
+          <option value="kiosco">Kiosco de colegio</option>
+          <option value="rotiseria">Rotisería</option>
+          <option value="marroquineria">Marroquinería</option>
+          <option value="impresion3d">Impresión 3D</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary u-mt-lg js-perfil-editar" type="button">Editar datos</button>
+      <button class="btn btn-primary u-mt-lg js-perfil-guardar" type="submit" style="display:none;">Guardar cambios</button>
+    </form>
+
+    <button class="btn btn-primary u-mt-lg u-max-w-form js-goto" data-target="insumos" type="button">Continuar a la app</button>
+    <button class="btn btn-secondary u-mt-md u-max-w-form js-logout" type="button">Cerrar sesión</button>
+  </section>
+
+</div><!-- /#app -->
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

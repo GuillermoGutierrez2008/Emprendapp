@@ -1,0 +1,192 @@
+/* ==========================================================================
+   GLOBAL.CSS — Reset, tipografía base y layout general de la SPA
+   ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Textura sutil: leve viñeta radial para dar profundidad al fondo */
+  background-image: var(--gradient-vignette);
+  /* Cambio de tema fluido en toda la app (ver initTheme() en app.js) */
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+}
+
+/* Todo elemento que usa tokens de color hace la transición de forma
+   fluida cuando se alterna entre modo claro / oscuro. */
+.card, .list-item, .field__input, .modal, .modal-overlay, .drawer,
+.app-header, .btn, .btn-secondary, .select-card, .metric-card,
+.kpi-card, .cost-summary__card, .tabs, .empty-state, .toast,
+.rank-item, .chart-card, .price-highlight, .search-bar__input,
+.progress-track, .drawer__link, .theme-toggle-btn {
+  transition: background-color var(--transition-base), border-color var(--transition-base),
+    color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-fast);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Accesibilidad: foco visible por teclado */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Respeta preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Contenedor raíz de la SPA ----
+   A diferencia de la v1, #app ya NO fuerza un "frame" de teléfono en
+   pantallas grandes: ocupa todo el ancho disponible y es cada .screen
+   la que decide su propio ancho máximo según su tipo (--screen-auth o
+   --screen-app), definido en screens.css. Esto permite que los
+   formularios se mantengan compactos mientras que las pantallas de
+   datos (Insumos, Costos, etc.) aprovechen el espacio en desktop. */
+#app {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg-pure);
+  overflow-x: hidden;
+}
+
+/* ---- Sistema de vistas (screens) ---- */
+.screen {
+  display: none;
+  min-height: 100vh;
+  width: 100%;
+  padding: var(--space-lg) var(--space-lg) var(--space-2xl);
+  flex-direction: column;
+}
+
+.screen.is-active {
+  display: flex;
+}
+
+/* Pantallas tipo formulario/onboarding: quedan contenidas en una tarjeta
+   centrada, nunca estiradas a lo ancho de un monitor grande. */
+.screen--auth {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Pantallas de contenido denso (Insumos, Costos, Cálculos, Estadísticas,
+   Perfil): usan un contenedor más ancho y dejan lugar arriba para el
+   header fijo, que sólo se muestra en este tipo de pantalla (ver
+   navigation.js, que agrega "has-app-header" al <body>). */
+.screen--app {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+body.has-app-header .screen--app {
+  padding-top: calc(var(--header-height) + var(--space-lg));
+}
+
+/* Clases de animación de transición entre vistas (ver animations.js) */
+.screen--enter {
+  animation: screenFadeIn var(--transition-slow) forwards;
+}
+
+.screen--exit {
+  animation: screenFadeOut var(--transition-base) forwards;
+}
+
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes screenFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
+
+/* ---- Utilidades genéricas ---- */
+.u-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-mt-sm { margin-top: var(--space-sm); }
+.u-mt-md { margin-top: var(--space-md); }
+.u-mt-lg { margin-top: var(--space-lg); }
+.u-mt-xl { margin-top: var(--space-xl); }
+
+.u-text-center { text-align: center; }
+.u-text-secondary { color: var(--color-text-secondary); }
+.u-text-accent { color: var(--color-text-accent); }
+
+/* Limita el ancho de botones/tarjetas sueltas dentro de una .screen--app
+   ancha, para que no se estiren de punta a punta en desktop. */
+.u-max-w-form {
+  max-width: 420px;
+  width: 100%;
+}
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

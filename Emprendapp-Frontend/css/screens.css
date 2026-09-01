@@ -1,0 +1,636 @@
+/* ==========================================================================
+   SCREENS.CSS — Estilos específicos por vista
+   --------------------------------------------------------------------------
+   Breakpoints usados en todo el archivo:
+     - Tablet:  min-width: 768px
+     - Desktop: min-width: 1024px
+   Mobile-first: los estilos base son para pantallas chicas y se van
+   ampliando/reacomodando en los @media hacia arriba.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- *
+ * 1. SPLASH SCREEN
+ * ---------------------------------------------------------------------- */
+.screen-splash {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  background: var(--gradient-splash);
+}
+
+.splash__icon {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(155deg, var(--color-accent), var(--color-accent-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 auto var(--space-lg);
+  box-shadow: var(--shadow-accent-glow);
+  opacity: 0;
+  transform: scale(0.6);
+  animation: splashIconIn 0.9s var(--ease-out) forwards;
+}
+
+.splash__title {
+  font-size: var(--fs-3xl);
+  color: var(--color-text-primary);
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+  animation: splashTextIn 0.9s var(--ease-out) forwards 0.25s;
+}
+
+.splash__tagline {
+  font-size: var(--fs-base);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-sm);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: splashTextIn 0.9s var(--ease-out) forwards 0.45s;
+}
+
+.splash__hint {
+  position: absolute;
+  bottom: var(--space-2xl);
+  left: 0;
+  right: 0;
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  opacity: 0;
+  animation: splashTextIn 0.9s var(--ease-out) forwards 1s;
+}
+
+@keyframes splashIconIn {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splashTextIn {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Estado de salida del splash (fade-out general antes de ir a Login) */
+.screen-splash.is-leaving {
+  animation: splashLeave 0.5s var(--ease-in-out) forwards;
+}
+
+@keyframes splashLeave {
+  to { opacity: 0; transform: scale(1.04); }
+}
+
+/* ---------------------------------------------------------------------- *
+ * AUTH SCREENS (login, recuperar, nueva contraseña, registro)
+ * ---------------------------------------------------------------------- */
+.auth-brand {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--color-text-accent);
+  margin: var(--space-xl) 0 var(--space-lg);
+}
+
+.auth-card-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg);
+  box-shadow: var(--shadow-elevated);
+}
+
+.auth-card__title {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-xs);
+}
+
+.auth-card__subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.auth-card__link {
+  display: block;
+  text-align: right;
+  font-size: var(--fs-xs);
+  color: var(--color-text-accent);
+  margin: -6px 0 var(--space-lg);
+}
+
+.auth-card__link:hover {
+  text-decoration: underline;
+}
+
+.auth-card__footer {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.auth-card__footer a, .auth-card__footer .js-link {
+  color: var(--color-text-accent);
+  font-weight: 600;
+}
+
+.auth-icon-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-alt);
+  border: 1px solid var(--color-accent-soft-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--color-accent);
+  margin: 0 auto var(--space-lg);
+}
+
+/* ---------------------------------------------------------------------- *
+ * ONBOARDING: progreso de pasos
+ * ---------------------------------------------------------------------- */
+.onboarding-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--space-xl);
+}
+
+.onboarding-progress__step {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-alt);
+}
+
+.onboarding-progress__step.is-done {
+  background-color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------- *
+ * 6. SELECCIÓN DE RUBRO
+ * ---------------------------------------------------------------------- */
+.rubro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0 var(--space-xl);
+}
+
+/* ---------------------------------------------------------------------- *
+ * SCREEN HEADER genérico (usado en Insumos, Costos, Cálculos, Estadísticas)
+ * ---------------------------------------------------------------------- */
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+.screen-header__title {
+  font-size: var(--fs-2xl);
+}
+
+.screen-header__subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+  margin-top: 2px;
+}
+
+/* ---------------------------------------------------------------------- *
+ * 7. INSUMOS
+ * ---------------------------------------------------------------------- */
+.search-bar {
+  position: relative;
+  margin-bottom: var(--space-lg);
+}
+
+.search-bar__icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.search-bar__input {
+  width: 100%;
+  padding: 12px var(--space-md) 12px 42px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm);
+}
+
+.search-bar__input:focus {
+  border-color: var(--color-accent);
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  animation: fadeInSimple var(--transition-slow);
+}
+
+.empty-state__icon-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-md);
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state__icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.empty-state__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.empty-state__desc {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.empty-state__cta {
+  margin: var(--space-lg) auto 0;
+}
+
+/* Variante compacta: usada dentro de gráficos/listas de rango que ya
+   tienen su propio card contenedor (Estadísticas), donde no hace falta
+   repetir el borde punteado ni el padding grande. */
+.empty-state--inline {
+  border: none;
+  background: transparent;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* ---------------------------------------------------------------------- *
+ * 8. COSTOS
+ * ---------------------------------------------------------------------- */
+.cost-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.cost-summary__card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.cost-summary__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.cost-summary__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--color-text-accent);
+}
+
+/* ---------------------------------------------------------------------- *
+ * 9. CÁLCULOS Y PRECIO DE VENTA
+ * ---------------------------------------------------------------------- */
+.metric-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.metric-card__label {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.metric-card__value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.price-highlight {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.price-highlight__label {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+.price-highlight__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  color: var(--color-text-accent);
+  margin: var(--space-xs) 0;
+}
+
+.price-highlight__gain {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.breakeven-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.breakeven-row__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+}
+
+/* ---------------------------------------------------------------------- *
+ * 10. ESTADÍSTICAS / DASHBOARD
+ * ---------------------------------------------------------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.kpi-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-sm);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.kpi-card__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.kpi-card__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+}
+
+.chart-card {
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card__title {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-lg);
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  height: 140px;
+  padding-top: var(--space-sm);
+}
+
+.bar-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 8px;
+}
+
+.bar-chart__bar {
+  width: 60%;
+  max-width: 28px;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-dark));
+  height: 0%;
+  transition: height 1s var(--ease-out);
+  position: relative;
+}
+
+.bar-chart__bar.is-current {
+  background: linear-gradient(180deg, #4be3ae, var(--color-accent));
+  box-shadow: var(--shadow-accent-glow);
+}
+
+.bar-chart__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-secondary);
+}
+
+.rank-item {
+  margin-bottom: var(--space-md);
+}
+
+.rank-item__top {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  margin-bottom: 6px;
+}
+
+.rank-item__name {
+  font-weight: 600;
+}
+
+.rank-item__pct {
+  color: var(--color-text-accent);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------- *
+ * LISTAS RESPONSIVAS (Insumos, Costos fijos/variables)
+ * Mobile: una columna apilada (comportamiento por defecto de .list-item).
+ * Tablet/Desktop: grilla de tarjetas para aprovechar el ancho disponible.
+ * ---------------------------------------------------------------------- */
+@media (min-width: 700px) {
+  .responsive-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-sm);
+    align-items: start;
+  }
+
+  .responsive-list-grid .list-item {
+    margin-bottom: 0;
+  }
+
+  .responsive-list-grid .empty-state {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * RUBRO: en pantallas más anchas la grilla puede lucir en 4 columnas
+ * sin perder el contenedor angosto de .screen--auth (queda prolijo
+ * porque .screen--auth ya limita el ancho total a --app-max-width).
+ * ---------------------------------------------------------------------- */
+@media (min-width: 460px) {
+  .rubro-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .select-card__title {
+    font-size: 11px;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * COSTOS: en desktop, la lista de costos fijos y el resumen (aside) se
+ * acomodan lado a lado en vez de quedar apilados.
+ * ---------------------------------------------------------------------- */
+.costos-panel-grid__aside {
+  margin-top: var(--space-lg);
+}
+
+.cost-summary--aside {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (min-width: 1024px) {
+  .costos-panel-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .costos-panel-grid__aside {
+    margin-top: 0;
+    /* Repetimos el ancho del botón "+ Agregar costo fijo" de la columna
+       principal para que el resumen arranque a la misma altura visual */
+    padding-top: calc(48px + var(--space-md));
+  }
+
+  .cost-summary--aside {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * CÁLCULOS: en desktop las métricas se acomodan en 2 columnas; el precio
+ * sugerido y el punto de equilibrio (los datos más importantes) ocupan
+ * todo el ancho para mantener jerarquía visual.
+ * ---------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .calculos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .calculos-grid > .metric-card,
+  .calculos-grid > .card {
+    margin-bottom: 0;
+  }
+
+  .calculos-grid__full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * ESTADÍSTICAS: el gráfico de barras y el ranking de productos quedan
+ * lado a lado en pantallas anchas en vez de apilados.
+ * ---------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .estadisticas-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .estadisticas-grid > .card {
+    margin-bottom: 0;
+  }
+}
+
+/* KPIs: en desktop les damos más aire y una tipografía más grande, ya
+   que dejan de competir por espacio con una pantalla angosta. */
+@media (min-width: 1024px) {
+  .kpi-card {
+    padding: var(--space-lg) var(--space-md);
+  }
+  .kpi-card__value {
+    font-size: var(--fs-lg);
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * AJUSTES GENERALES DE ESPACIADO EN TABLET / DESKTOP
+ * ---------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .screen {
+    padding: var(--space-xl) var(--space-xl) var(--space-2xl);
+  }
+  .screen--auth {
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen--app {
+    padding-left: var(--space-2xl);
+    padding-right: var(--space-2xl);
+  }
+}
